@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Data
-@Entity
+@Entity(name = "writeProduct")
 @Table(name = "products")
 public class Product {
     @Id
