@@ -23,3 +23,7 @@ spring:
           json:
             trusted:
               packages: '*'
+
+logging:
+  level:
+    rospopa.strpz2: debug

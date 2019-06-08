@@ -1,11 +1,11 @@
 package rospopa.strpz2.write.domain.command;
 
 import lombok.Data;
-import rospopa.strpz2.write.domain.OrderedItem;
+import rospopa.strpz2.write.domain.OrderedProduct;
 
 import java.util.List;
 
 @Data
 public class CreateOrderCommand {
-    private List<OrderedItem> items;
+    private List<OrderedProduct> orderedProducts;
 }

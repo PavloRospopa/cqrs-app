@@ -10,10 +10,10 @@ import java.util.List;
 @Data
 public class CreateOrderRequestDto {
     @NotEmpty
-    private List<@Valid OrderItemDto> items;
+    private List<@Valid OrderedProductDto> orderedProducts;
 
     @Data
-    public static class OrderItemDto {
+    public static class OrderedProductDto {
         private long productId;
         @Positive
         private int quantity;

@@ -1,10 +1,12 @@
 package rospopa.strpz2.write.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import rospopa.strpz2.write.domain.Order;
-import rospopa.strpz2.write.domain.OrderedItem;
+import rospopa.strpz2.write.domain.OrderedProduct;
+import rospopa.strpz2.write.domain.event.OrderCreatedEvent;
+import rospopa.strpz2.write.domain.event.OrderDiscardedEvent;
 import rospopa.strpz2.write.persistence.OrderRepository;
 
 import javax.persistence.EntityNotFoundException;
@@ -15,21 +17,22 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toMap;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductService productService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public Order create(String orderUuid, Collection<OrderedItem> items) {
+    public Order create(String orderUuid, Collection<OrderedProduct> orderedProducts) {
         var order = new Order();
         order.setUuid(orderUuid);
         order.setStatus(Order.Status.CREATED);
         order = orderRepository.save(order);
 
-        var productsQuantityMap = items.stream().collect(toMap(OrderedItem::getProductId, OrderedItem::getQuantity));
+        var productsQuantityMap = orderedProducts.stream()
+                .collect(toMap(OrderedProduct::getProductId, OrderedProduct::getQuantity));
         var products = productService.getAll(productsQuantityMap.keySet());
 
         for (var product : products) {
@@ -37,7 +40,7 @@ public class OrderService {
             product.deductAvailableQuantity(quantity);
             order.addItem(product, quantity);
         }
-
+        eventPublisher.publishEvent(new OrderCreatedEvent(order));
         return order;
     }
 
@@ -50,6 +53,7 @@ public class OrderService {
             product.addAvailableQuantity(item.getQuantity());
         }
         order.setStatus(Order.Status.DISCARDED);
+        eventPublisher.publishEvent(new OrderDiscardedEvent(order));
         return order;
     }
 
