@@ -28,6 +28,7 @@ dependencies {
     implementation 'com.google.guava:guava:27.1-jre'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'net.logstash.logback:logstash-logback-encoder:5.1'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
